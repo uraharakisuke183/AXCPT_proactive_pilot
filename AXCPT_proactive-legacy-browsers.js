@@ -5,8 +5,9 @@
 
 // store info about the experiment session:
 let expName = 'AXCPT_proactive';  // from the Builder filename that created this script
+const _urlId = new URLSearchParams(window.location.search).get('id') || 'unknown';
 let expInfo = {
-    'participant': '',
+    'participant': _urlId,
     'session': '001',
 };
 let PILOTING = util.getUrlParameters().has('__pilotToken');
@@ -1253,6 +1254,20 @@ function mixed_practice_trialsLoopEndIteration(scheduler, snapshot) {
   };
 }
 
+// Reuse the main trial implementation for the mixed-practice loop.
+// Feedback reads the active keyboard objects through the compatibility code below.
+function mixed_practice_trialRoutineBegin(snapshot) {
+  return main_trialsRoutineBegin(snapshot);
+}
+
+function mixed_practice_trialRoutineEachFrame() {
+  return main_trialsRoutineEachFrame();
+}
+
+function mixed_practice_trialRoutineEnd(snapshot) {
+  return main_trialsRoutineEnd(snapshot);
+}
+
 
 var blocks_loop;
 function blocks_loopLoopBegin(blocks_loopLoopScheduler, snapshot) {
@@ -1550,7 +1565,7 @@ function training_trial_1RoutineEachFrame() {
       isi_blank_1.setAutoDraw(false);
     }
     
-    if (audio_cue.status === STARTED) {
+    if (audio_cue.status === PsychoJS.Status.STARTED) {
         audio_cue.isPlaying = true;
         if (t >= (audio_cue.getDuration() + audio_cue.tStart)) {
             audio_cue.isFinished = true;
@@ -2416,16 +2431,23 @@ function feedbackRoutineBegin(snapshot) {
     let cueExpectedEmpty = expectedIsEmpty(cue_resp);
     let probeExpectedEmpty = expectedIsEmpty(probe_resp);
     
-    let cueMissing = emptyResponse(cue_key_resp.keys);
-    let probeMissing = emptyResponse(probe_key_resp.keys);
+    let activeCueKeyResp = (
+      (typeof cue_key_resp !== "undefined") && cue_key_resp
+    ) ? cue_key_resp : cue_key_resp_2;
+    let activeProbeKeyResp = (
+      (typeof probe_key_resp !== "undefined") && probe_key_resp
+    ) ? probe_key_resp : probe_key_resp_2;
+    
+    let cueMissing = emptyResponse(activeCueKeyResp.keys);
+    let probeMissing = emptyResponse(activeProbeKeyResp.keys);
     
     let cueOk = (typeof globalThis.cue_corr !== "undefined")
       ? (globalThis.cue_corr === 1)
-      : (cue_key_resp.corr === 1);
+      : (activeCueKeyResp.corr === 1);
     
     let probeOk = (typeof globalThis.probe_corr !== "undefined")
       ? (globalThis.probe_corr === 1)
-      : (probe_key_resp.corr === 1);
+      : (activeProbeKeyResp.corr === 1);
     
     if (!cueExpectedEmpty && !cueOk) {
       if (cueMissing) {
@@ -3154,10 +3176,10 @@ function main_trialsRoutineEnd(snapshot) {
         }
         
         let cueExpected = normValue(cue_resp);
-        let cuePressed = normValue(cue_key_resp.keys);
+        let cuePressed = normValue(cue_key_resp_2.keys);
         
         let probeExpected = normValue(probe_resp);
-        let probePressed = normValue(probe_key_resp.keys);
+        let probePressed = normValue(probe_key_resp_2.keys);
         
         globalThis.cue_corr = (cueExpected === null)
           ? (cuePressed === null ? 1 : 0)
@@ -3169,12 +3191,13 @@ function main_trialsRoutineEnd(snapshot) {
         
         globalThis.is_nogo = (probeExpected === null) ? 1 : 0;
         
-        cue_key_resp.corr = globalThis.cue_corr;
-        probe_key_resp.corr = globalThis.probe_corr;
+        cue_key_resp_2.corr = globalThis.cue_corr;
+        probe_key_resp_2.corr = globalThis.probe_corr;
         
         psychoJS.experiment.addData("cue_corr", globalThis.cue_corr);
         psychoJS.experiment.addData("probe_corr", globalThis.probe_corr);
         psychoJS.experiment.addData("is_nogo", globalThis.is_nogo);
+        psychoJS.experiment.addData("is_nogo_design", globalThis.is_nogo);
         
         if (typeof blocks_loop !== "undefined" && blocks_loop !== null &&
             typeof trials_loop !== "undefined" && trials_loop !== null) {
@@ -3217,7 +3240,7 @@ function block_breakRoutineBegin(snapshot) {
         block_breakMaxDurationReached = false;
         // update component parameters for each repeat
         // Run 'Begin Routine' code from block_break_code
-        if (blocksloop.thisN === (blocksloop.nTotal - 1)) {
+        if (blocks_loop.thisN === (blocks_loop.nTotal - 1)) {
             continueRoutine = false;
         } else {
             block_break_text.setText("Вы выполнили 1/3 (или 2/3) эксперимента!\n\nПожалуйста, сделайте перерыв на 1–5 минут.\n\nЧерез одну минуту вы сможете продолжить выполнение задания.\n\nЕсли вам нужно больше времени, это нормально, но, пожалуйста, не делайте перерыв дольше 5 минут.");
@@ -3837,31 +3860,31 @@ function questionnareRoutineEachFrame() {
         // Фиксация ответа
         if (!answered && t > 0.3) {
             if (btn1.isClicked) {
-                psychoJS.experiment.addData('qnumber', questionsloop.thisN + 1);
+                psychoJS.experiment.addData('q_number', questions_loop.thisN + 1);
                 psychoJS.experiment.addData('question', question);
                 psychoJS.experiment.addData('answer', opt1);
                 continueRoutine = false;
                 answered = true;
             } else if (btn2.isClicked) {
-                psychoJS.experiment.addData('qnumber', questionsloop.thisN + 1);
+                psychoJS.experiment.addData('q_number', questions_loop.thisN + 1);
                 psychoJS.experiment.addData('question', question);
                 psychoJS.experiment.addData('answer', opt2);
                 continueRoutine = false;
                 answered = true;
             } else if (btn3.isClicked) {
-                psychoJS.experiment.addData('qnumber', questionsloop.thisN + 1);
+                psychoJS.experiment.addData('q_number', questions_loop.thisN + 1);
                 psychoJS.experiment.addData('question', question);
                 psychoJS.experiment.addData('answer', opt3);
                 continueRoutine = false;
                 answered = true;
             } else if (btn4.isClicked) {
-                psychoJS.experiment.addData('qnumber', questionsloop.thisN + 1);
+                psychoJS.experiment.addData('q_number', questions_loop.thisN + 1);
                 psychoJS.experiment.addData('question', question);
                 psychoJS.experiment.addData('answer', opt4);
                 continueRoutine = false;
                 answered = true;
             } else if (btn5.isClicked && !opt5isempty) {
-                psychoJS.experiment.addData('qnumber', questionsloop.thisN + 1);
+                psychoJS.experiment.addData('q_number', questions_loop.thisN + 1);
                 psychoJS.experiment.addData('question', question);
                 psychoJS.experiment.addData('answer', opt5);
                 continueRoutine = false;
@@ -4211,7 +4234,7 @@ function data_saveRoutineEachFrame() {
         if (text_data_save.status === PsychoJS.Status.STARTED) {
         }
         
-        frameRemains = 0.0 + 3 - psychoJS.window.monitorFramePeriod * 0.75;// most of one frame period left
+        frameRemains = 0.0 + 3600 - psychoJS.window.monitorFramePeriod * 0.75;// keep message visible while DataPipe finishes
         if (text_data_save.status === PsychoJS.Status.STARTED && t >= frameRemains) {
           // keep track of stop time/frame for later
           text_data_save.tStop = t;  // not accounting for scr refresh
@@ -4240,7 +4263,7 @@ function data_saveRoutineEachFrame() {
         });
         
         // refresh the screen if continuing
-        if (continueRoutine && routineTimer.getTime() > 0) {
+        if (continueRoutine) {
           return Scheduler.Event.FLIP_REPEAT;
         } else {
           return Scheduler.Event.NEXT;
