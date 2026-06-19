@@ -118,7 +118,7 @@ psychoJS.start({
     {'name': 'audio_stimuli/right.wav', 'path': 'audio_stimuli/right.wav'},
     {'name': 'conditions/prac_proactive_trials/proactive_trials2.xlsx', 'path': 'conditions/prac_proactive_trials/proactive_trials2.xlsx'},
     {'name': 'conditions/practice_trials.xlsx', 'path': 'conditions/practice_trials.xlsx'},
-    {'name': 'conditions/blocks.xlsx', 'path': 'conditions/blocks.xlsx'},
+    {'name': 'conditions/blocks_short.xlsx', 'path': 'conditions/blocks_short.xlsx'},
     {'name': 'conditions/main_trials.xlsx', 'path': 'conditions/main_trials.xlsx'},
     {'name': 'questionnare/questionnaire_loop.xlsx', 'path': 'questionnare/questionnaire_loop.xlsx'},
   ]
@@ -1282,7 +1282,7 @@ function blocks_loopLoopBegin(blocks_loopLoopScheduler, snapshot) {
       psychoJS: psychoJS,
       nReps: 1, method: TrialHandler.Method.SEQUENTIAL,
       extraInfo: expInfo, originPath: undefined,
-      trialList: 'conditions/blocks.xlsx',
+      trialList: 'conditions/blocks_short.xlsx',
       seed: undefined, name: 'blocks_loop'
     });
     psychoJS.experiment.addLoop(blocks_loop); // add the loop to the experiment
@@ -3570,13 +3570,33 @@ function questionnareRoutineBegin(snapshot) {
             btns[i].clock.reset();
         }
         
-        btn1.setText(opt1);
-        btn2.setText(opt2);
-        btn3.setText(opt3);
-        btn4.setText(opt4);
-        btn5.setText(opt5);
-        psychoJS.experiment.addData('questionnare.started', globalClock.getTime());
-        questionnareMaxDuration = null
+       btn1.setText(opt1);
+btn2.setText(opt2);
+btn3.setText(opt3);
+btn4.setText(opt4);
+btn5.setText(opt5);
+
+var btns = [btn1, btn2, btn3, btn4, btn5];
+var opts = [opt1, opt2, opt3, opt4, opt5];
+
+for (var i = 0; i < btns.length; i++) {
+    var txt = (opts[i] === undefined || opts[i] === null) ? "" : String(opts[i]);
+
+    btns[i].setSize([1.2, 0.08]);
+
+    if (txt.length > 65) {
+        btns[i].setLetterHeight(0.020);
+    } else if (txt.length > 50) {
+        btns[i].setLetterHeight(0.023);
+    } else {
+        btns[i].setLetterHeight(0.030);
+    }
+
+    btns[i].setText(txt);
+}
+
+psychoJS.experiment.addData('questionnare.started', globalClock.getTime());
+questionnareMaxDuration = null;
         // keep track of which components have finished
         questionnareComponents = [];
         questionnareComponents.push(question_text);
