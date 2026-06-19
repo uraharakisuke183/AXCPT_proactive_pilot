@@ -3565,27 +3565,45 @@ function questionnareRoutineBegin(snapshot) {
         btn5.setText(opt5);
         // reset btn5 to account for continued clicks & clear times on/off
         btn5.reset()
-        // Run 'Begin Routine' code from code_questionnaire
-        psychoJS.window.mouseVisible = true;
-        
-        
-        answered = false;
-        
-        var btns = [btn1, btn2, btn3, btn4, btn5];
-        for (var i = 0; i < btns.length; i++) {
-            btns[i].timesOn = [];
-            btns[i].timesOff = [];
-            btns[i].clock.reset();
-        }
-        
-        btn1.setText(opt1);
-        btn2.setText(opt2);
-        btn3.setText(opt3);
-        btn4.setText(opt4);
-        btn5.setText(opt5);
-        psychoJS.experiment.addData('questionnare.started', globalClock.getTime());
-        questionnareMaxDuration = null
-        // keep track of which components have finished
+// Run 'Begin Routine' code from code_questionnaire
+psychoJS.window.mouseVisible = true;
+
+answered = false;
+
+var btns = [btn1, btn2, btn3, btn4, btn5];
+for (var i = 0; i < btns.length; i++) {
+    btns[i].timesOn = [];
+    btns[i].timesOff = [];
+    btns[i].clock.reset();
+}
+
+btn1.setText(opt1);
+btn2.setText(opt2);
+btn3.setText(opt3);
+btn4.setText(opt4);
+btn5.setText(opt5);
+
+var opts = [opt1, opt2, opt3, opt4, opt5];
+
+for (var i = 0; i < btns.length; i++) {
+    var txt = (opts[i] === undefined || opts[i] === null) ? "" : String(opts[i]);
+
+    btns[i].setSize([1.2, 0.08]);
+
+    if (txt.length > 65) {
+        btns[i].setLetterHeight(0.020);
+    } else if (txt.length > 50) {
+        btns[i].setLetterHeight(0.023);
+    } else {
+        btns[i].setLetterHeight(0.030);
+    }
+
+    btns[i].setText(txt);
+}
+
+psychoJS.experiment.addData('questionnare.started', globalClock.getTime());
+questionnareMaxDuration = null;
+// keep track of which components have finished
         questionnareComponents = [];
         questionnareComponents.push(question_text);
         questionnareComponents.push(btn1);
